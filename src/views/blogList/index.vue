@@ -1,5 +1,18 @@
 <template>
     <div class="app-container">
+        <div class="filter">
+            <div class="list">
+                <label>文章搜索</label>
+                <el-input
+                    v-model="title"
+                    prefix-icon="el-icon-search"
+                    placeholder="请输入内容"
+                    @keyup.enter.native="search"
+                    @clear="search"
+                    clearable
+                ></el-input>
+            </div>
+        </div>
         <!-- 数据表格 -->
         <el-table :data="data" style="width: 100%" border>
             <el-table-column prop="date" label="序号" width="60" align="center">
@@ -60,7 +73,7 @@
             :page-sizes="[10, 20, 50, 100]"
             layout="prev, pager, next, total, ->, sizes, jumper"
             :total="count"
-            :current-page.sync="pagerCurrentPage"
+            :current-page.sync="currentPage"
             @size-change="sizeChangeHandle"
             @current-change="currentChangeHandle"
             @prev-click="prevClickHandle"
@@ -82,30 +95,36 @@ export default {
             currentPage: 1, // 当前页码，默认进来是第一页
             totalPage: 0, // 总页数
             count: 0, // 数据总条数
-            pagerCurrentPage: 1, // 分页栏当前页码
+            title: "",
         };
     },
     created() {
         this.fetchData();
     },
     methods: {
+        search() {
+            this.currentPage = 1;
+            this.fetchData();
+        },
         fetchData() {
-            findBlog(this.currentPage, this.eachPage).then(({ data }) => {
-                this.data = data.rows;
-                for (var i of this.data) {
-                    i.createDate = formatDate(i.createDate);
-                    // i.thumb = server_URL + i.thumb;
-                    this.srcList.push(i.thumb);
+            findBlog(this.currentPage, this.eachPage, this.title).then(
+                ({ data }) => {
+                    this.data = data.rows;
+                    for (var i of this.data) {
+                        i.createDate = formatDate(i.createDate);
+                        // i.thumb = server_URL + i.thumb;
+                        this.srcList.push(i.thumb);
+                    }
+                    this.count = data.total;
+                    this.totalPage = Math.ceil(this.count / this.eachPage);
+                    // 下面的 if 会在删除文章的时候可能会触发，例如最后一页只有一条数据
+                    // 删除之后，总页码数就会减一，当前页码数就大于了总页码数，所以要做处理
+                    if (this.currentPage > this.totalPage) {
+                        this.currentPage = this.totalPage;
+                        this.fetchData();
+                    }
                 }
-                this.count = data.total;
-                this.totalPage = Math.ceil(this.count / this.eachPage);
-                // 下面的 if 会在删除文章的时候可能会触发，例如最后一页只有一条数据
-                // 删除之后，总页码数就会减一，当前页码数就大于了总页码数，所以要做处理
-                if (this.currentPage > this.totalPage) {
-                    this.currentPage = this.totalPage;
-                    this.fetchData();
-                }
-            });
+            );
         },
         // 跳转到具体的文章
         goToTitleHandle(blogInfo) {
@@ -147,7 +166,6 @@ export default {
         sizeChangeHandle(pagerNum) {
             this.eachPage = parseInt(pagerNum);
             this.currentPage = 1;
-            this.pagerCurrentPage = 1;
             this.fetchData();
         },
         currentChangeHandle(pageNum) {
@@ -165,4 +183,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.filter {
+    margin-bottom: 20px;
+    .list {
+        display: flex;
+        align-items: center;
+        label {
+            width: 100px;
+            font-weight: 400;
+        }
+        .el-input {
+            width: 300px;
+        }
+    }
+}
 </style>
