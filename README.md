@@ -20,6 +20,12 @@ cd vue-admin-template
 # install dependency
 npm install
 
+```
+
+测试拉取
+
+```
+
 # develop
 npm run dev
 ```
