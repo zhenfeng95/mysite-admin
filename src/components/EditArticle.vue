@@ -70,7 +70,12 @@ export default {
                 this.form = data;
                 this.form.select =
                     data.category === null ? "" : data.category.id;
-                this.$refs.toastuiEditor.invoke("setHTML", data.htmlContent);
+
+                // this.$refs.toastuiEditor.invoke("setHTML", data.htmlContent);
+                this.$refs.toastuiEditor.invoke(
+                    "setMarkdown",
+                    data.htmlContent
+                );
             });
             this.btnContent = "确认修改";
         }
@@ -83,12 +88,13 @@ export default {
         addArticleHandle() {
             // 添加文章的业务逻辑 1. 获取表单内容   2. 发送请求
 
-            let html = this.$refs.toastuiEditor.invoke("getHTML");
+            // let html = this.$refs.toastuiEditor.invoke("getHTML");
+            let html = this.$refs.toastuiEditor.invoke("getMarkdown");
             let markdown = this.$refs.toastuiEditor.invoke("getMarkdown");
-            if (html) {
-                // 过滤空的p标签
-                html = html.replace(/<p>(\s|<br\s*\/?>)*<\/p>/gi, "");
-            }
+            // if (html) {
+            //     // 过滤空的p标签
+            //     html = html.replace(/<p>(\s|<br\s*\/?>)*<\/p>/gi, "");
+            // }
 
             // 接下来，我们来组装要传递给服务器的对象
 
