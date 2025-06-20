@@ -38,8 +38,8 @@ module.exports = {
     },
     proxy: {
       "/api": {
-        // target: "https://zzf.net.cn",
-        target: "http://localhost:3001",
+        target: "https://zzf.net.cn",
+        // target: "http://localhost:3001",
       },
       //   "/static": {
       //     target: "http://zzf.net.cn",
