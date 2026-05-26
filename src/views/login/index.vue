@@ -169,7 +169,7 @@ export default {
     getCaptchaFunc() {
       getCaptcha().then((res) => {
         if (res.code == 0) {
-          this.svg = res.data;
+          this.svg = res.data.captchaBase64;
         }
       });
     },
